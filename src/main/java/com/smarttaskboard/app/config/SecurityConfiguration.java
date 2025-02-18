@@ -1,5 +1,6 @@
-package com.smarttaskboard.app.security;
+package com.smarttaskboard.app.config;
 
+import com.smarttaskboard.app.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +26,9 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers(
                                 "/api/v1/auth-service/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
+                                "/task-board/v3/api-docs/**",
+                                "/task-board/swagger-ui/**",
+                                "/task-board/swagger-ui.html",
                                 "/webjars/**")
 
                         .permitAll()
