@@ -2,6 +2,7 @@ package com.smarttaskboard.app.controller;
 
 import com.smarttaskboard.app.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/admin")
 @RequiredArgsConstructor
+@Slf4j
 public class AdminController {
     private final UserService userService;
 
@@ -23,11 +25,7 @@ public class AdminController {
             @PathVariable Long userId,
             @RequestParam String roleName) {
         userService.assignRoleToUser(userId, roleName);
+        log.info("Role assigned successfully");
         return ResponseEntity.ok("Role assigned successfully");
-    }
-
-    @PostMapping("/testAdmin")
-    public ResponseEntity<String> seyHello() {
-        return ResponseEntity.ok("Hello from Admin Controller!");
     }
 }

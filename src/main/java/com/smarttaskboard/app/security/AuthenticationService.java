@@ -9,6 +9,7 @@ import com.smarttaskboard.app.model.User;
 import com.smarttaskboard.app.repository.RoleRepository;
 import com.smarttaskboard.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -29,6 +31,7 @@ public class AuthenticationService {
     public AuthenticationResponseDto register(RegisterRequestDto registerRequest) {
         Role defaultRole = roleRepository.findByNameIgnoreCase("USER")
                 .orElseThrow(() -> new RuntimeException("Default role not found"));
+        log.info("New user registration begin");
         var user = User.builder()
                 .username(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
@@ -38,6 +41,7 @@ public class AuthenticationService {
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefresh(new HashMap<>(), user);
+        log.info("New user registration end");
         return AuthenticationResponseDto.builder()
                 .authenticationToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -50,9 +54,10 @@ public class AuthenticationService {
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         if (!role.getName().equals("ADMIN")) {
+            log.error("Only ADMIN can register as ADMIN");
             throw new IllegalArgumentException("Only ADMIN can register as ADMIN");
         }
-
+        log.info("New admin registration begin");
         var user = new User();
         user.setUsername(createAdminRequest.getUsername());
         user.setEmail(createAdminRequest.getEmail());
@@ -60,10 +65,9 @@ public class AuthenticationService {
         user.setRoles(Set.of(role));
 
         userRepository.save(user);
-
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefresh(new HashMap<>(), user);
-
+        log.info("New admin registration end");
         return AuthenticationResponseDto.builder()
                 .authenticationToken(jwtToken)
                 .refreshToken(refreshToken)
