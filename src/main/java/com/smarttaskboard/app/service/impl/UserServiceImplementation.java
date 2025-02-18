@@ -6,10 +6,12 @@ import com.smarttaskboard.app.repository.RoleRepository;
 import com.smarttaskboard.app.repository.UserRepository;
 import com.smarttaskboard.app.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImplementation implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -18,12 +20,11 @@ public class UserServiceImplementation implements UserService {
     public void assignRoleToUser(Long userId, String roleName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         Role role = roleRepository.findByNameIgnoreCase(roleName)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         user.getRoles().add(role);
         userRepository.save(user);
-
+        log.info("Role {} was assigned to the user {}", user.getUsername(), roleName);
     }
 }
